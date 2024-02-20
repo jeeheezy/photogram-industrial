@@ -8,7 +8,7 @@
 #  encrypted_password     :string           default(""), not null
 #  likes_count            :integer          default(0)
 #  photos_count           :integer          default(0)
-#  private                :boolean
+#  private                :boolean          default(TRUE)
 #  remember_created_at    :datetime
 #  reset_password_sent_at :datetime
 #  reset_password_token   :string
@@ -27,6 +27,7 @@ class User < ApplicationRecord
   # :confirmable, :lockable, :timeoutable, :trackable and :omniauthable
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
+  validates :username, presence: true, uniqueness: true
 
   has_many :own_photos, class_name: "Photo", foreign_key: "owner_id"
   has_many :comments, foreign_key: "author_id"
@@ -41,6 +42,7 @@ class User < ApplicationRecord
   has_many :liked_photos, through: :likes, source: :photos
 # start from User, go to FollowRequest by taking accepted_sent_follow_request, then going from FollowRequest to "different" User table by recipient association
   has_many :leaders, through: :accepted_sent_follow_requests, source: :recipient
+# same association as the one before but just going the other way around
   has_many :followers, through: :accepted_received_follow_requests, source: :sender
 
 # think of it as going from yourself to the user you are following by association of leaders, then going from that user to photos by associations of own_photos for their photos or liked_photos for the photos they liked
