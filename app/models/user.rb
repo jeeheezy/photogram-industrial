@@ -30,7 +30,20 @@ class User < ApplicationRecord
 
   has_many :own_photos, class_name: "Photo", foreign_key: "owner_id"
   has_many :comments, foreign_key: "author_id"
-  has_many :sent_follow_requests, class_name: "FollowRequests", foreign_key: "sender_id"
-  has_many :received_follow_requests, class_name: "FollowRequests", foreign_key: "recipient_id"
+  has_many :sent_follow_requests, class_name: "FollowRequest", foreign_key: "sender_id"
+  has_many :accepted_sent_follow_requests, -> { where(status: "accepted") }, class_name: "FollowRequest", foreign_key: "sender_id"
+  has_many :received_follow_requests, class_name: "FollowRequest", foreign_key: "recipient_id"
+  has_many :accepted_received_follow_requests, -> { where(status: "accepted") },class_name: "FollowRequest", foreign_key: "recipient_id" 
   has_many :likes, foreign_key: "fan_id"
+
+# consider going from one table to another table by named association
+# e.g. makinga new association of many-to-many called liked_photos by starting from User, take association of likes to get to Like, and then go from Like to Photos by the association in Like called photos
+  has_many :liked_photos, through: :likes, source: :photos
+# start from User, go to FollowRequest by taking accepted_sent_follow_request, then going from FollowRequest to "different" User table by recipient association
+  has_many :leaders, through: :accepted_sent_follow_requests, source: :recipient
+  has_many :followers, through: :accepted_received_follow_requests, source: :sender
+
+# think of it as going from yourself to the user you are following by association of leaders, then going from that user to photos by associations of own_photos for their photos or liked_photos for the photos they liked
+  has_many :feed, through: :leaders, source: :own_photos
+  has_many :discover, through: :leaders, source: :liked_photos
 end
