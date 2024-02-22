@@ -38,8 +38,8 @@ class User < ApplicationRecord
   has_many :likes, foreign_key: "fan_id"
 
 # consider going from one table to another table by named association
-# e.g. makinga new association of many-to-many called liked_photos by starting from User, take association of likes to get to Like, and then go from Like to Photos by the association in Like called photos
-  has_many :liked_photos, through: :likes, source: :photos
+# e.g. makinga new association of many-to-many called liked_photos by starting from User, take association of likes to get to Like, and then go from Like to Photos by the association in Like called photo
+  has_many :liked_photos, through: :likes, source: :photo
 # start from User, go to FollowRequest by taking accepted_sent_follow_request, then going from FollowRequest to "different" User table by recipient association
   has_many :leaders, through: :accepted_sent_follow_requests, source: :recipient
 # same association as the one before but just going the other way around
