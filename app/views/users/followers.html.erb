@@ -1,0 +1,9 @@
+<%= render "users/navtabs", user: @user %>
+
+<ul class="list-group">
+  <% @user.followers.each do |follower| %>
+  <li class="list-group-item">
+    <%= link_to "#{follower.username}", user_path(follower.username) %>
+  </li>
+  <% end %>
+</ul>
